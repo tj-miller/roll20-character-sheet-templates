@@ -11,7 +11,7 @@ on('chat:message', function (msg) {
             var dice = msg.inlinerolls[1].results.rolls[0].results;
         }
         
-        if(msg.content.indexOf('Initiative') >= 0) {
+        if(msg.content.indexOf('Initiative') >= 0 || dice === undefined) {
             return; //not a pooled roll, don't report glitches
         }
         var oneCount = 0;
@@ -19,15 +19,12 @@ on('chat:message', function (msg) {
         var i = 0;
         var r;
         
-        if(dice.length)
-            {
-            for(i=0; i<dice.length; i++) {
-                if(dice[i].v == 1) {
-                    oneCount++;
-                }
-                if(dice[i].v == 5 || dice[i].v == 6) {
-                    hitCount++;
-                }
+        for(i=0; i<dice.length; i++) {
+            if(dice[i].v == 1) {
+                oneCount++;
+            }
+            if(dice[i].v == 5 || dice[i].v == 6) {
+                hitCount++;
             }
         }
         log(msg.who + " rolled " + oneCount +" out of " + poolSize);

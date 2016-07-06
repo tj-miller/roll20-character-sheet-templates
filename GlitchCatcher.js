@@ -1,13 +1,11 @@
 on('chat:message', function (msg) {
-    
-    if((msg.type == 'general' && (msg.rolltemplate.indexOf('sr2') >= 0)) || msg.type == 'rollresult') { //todo JSON.parse(msg.content) to get the rollresult obj
-        
-        if(msg.type == 'rollresult') {
+    if(((msg.type == 'general' || msg.type == 'whisper') && (msg.rolltemplate || msg.rolltemplate.indexOf('sr2') >= 0)) || (msg.type == 'rollresult' || msg.type == 'gmrollresult')) { //todo JSON.parse(msg.content) to get the rollresult obj
+        if(msg.type == 'rollresult' || msg.type == 'gmrollresult') {
             var rollResult = JSON.parse(msg.content);
             log(rollResult);
             var poolSize = rollResult.rolls[0].dice;
             var dice = rollResult.rolls[0].results;
-        } else {
+        }else {
             log(msg.inlinerolls);
             var poolSize = msg.inlinerolls[1].results.rolls[0].dice;
             var dice = msg.inlinerolls[1].results.rolls[0].results;
@@ -21,13 +19,15 @@ on('chat:message', function (msg) {
         var i = 0;
         var r;
         
-        
-        for(i=0; i<dice.length; i++) {
-            if(dice[i].v == 1) {
-                oneCount++;
-            }
-            if(dice[i].v == 5 || dice[i].v == 6) {
-                hitCount++;
+        if(dice.length)
+            {
+            for(i=0; i<dice.length; i++) {
+                if(dice[i].v == 1) {
+                    oneCount++;
+                }
+                if(dice[i].v == 5 || dice[i].v == 6) {
+                    hitCount++;
+                }
             }
         }
         log(msg.who + " rolled " + oneCount +" out of " + poolSize);
